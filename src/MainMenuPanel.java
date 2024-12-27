@@ -9,7 +9,7 @@ public class MainMenuPanel extends JPanel {
         setLayout(new GridLayout(4, 1, 10, 10));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JButton manageScreensButton = new JButton("Manage Screens");
+        JButton manageScreensButton = new JButton("View Screens");
         manageScreensButton.addActionListener(e -> switchPanel("ManageScreens"));
 
         JButton manageSeatsButton = new JButton("Manage Seats");
@@ -28,6 +28,11 @@ public class MainMenuPanel extends JPanel {
     }
 
     private void switchPanel(String panelName) {
+        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+        cardLayout.show(mainPanel, panelName);
+    }
+
+    private void switchPanel(String panelName, int id) {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         cardLayout.show(mainPanel, panelName);
     }
