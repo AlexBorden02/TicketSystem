@@ -1,13 +1,12 @@
 public class Screen {
-    private static int idCounter = 0; // Class variable to track ids
     private int id;
     private int rows;
     private int columns;
     private int totalSeats;
     private boolean is3D;
 
-    public Screen(int rows, int columns, boolean is3D) {
-        this.id = ++idCounter;
+    public Screen(int id, int rows, int columns, boolean is3D) {
+        this.id = id;
         this.rows = rows;
         this.columns = columns;
         this.totalSeats = rows * columns;

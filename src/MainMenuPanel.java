@@ -31,9 +31,4 @@ public class MainMenuPanel extends JPanel {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         cardLayout.show(mainPanel, panelName);
     }
-
-    private void switchPanel(String panelName, int id) {
-        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-        cardLayout.show(mainPanel, panelName);
-    }
 }

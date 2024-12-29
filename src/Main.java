@@ -15,17 +15,18 @@ public class Main {
             JPanel mainPanel = new JPanel(new CardLayout());
             MainMenuPanel mainMenuPanel = new MainMenuPanel(mainPanel);
 
-            // screen buttons
             ManageScreensPanel manageScreensPanel = new ManageScreensPanel(mainPanel);
             ManageSeatsPanel manageSeatsPanel = new ManageSeatsPanel(mainPanel);
             ManageFilmsPanel manageFilmsPanel = new ManageFilmsPanel(mainPanel);
             ManageBookingsPanel manageBookingsPanel = new ManageBookingsPanel(mainPanel);
+            ScreenPanel screenPanel = new ScreenPanel(mainPanel);
 
             mainPanel.add(mainMenuPanel, "MainMenu");
             mainPanel.add(manageScreensPanel, "ManageScreens");
             mainPanel.add(manageSeatsPanel, "ManageSeats");
             mainPanel.add(manageFilmsPanel, "ManageFilms");
             mainPanel.add(manageBookingsPanel, "ManageBookings");
+            mainPanel.add(screenPanel, "Screen");
 
             frame.setContentPane(mainPanel);
             frame.setVisible(true);
