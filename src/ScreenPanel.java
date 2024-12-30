@@ -7,13 +7,10 @@ import java.sql.SQLException;
 
 public class ScreenPanel extends JPanel {
     private JPanel mainPanel;
-
+    private JPanel gridPanel;
     private int screenId;
     private JLabel screenLabel;
     private Screen currentScreen;
-    private int rows;
-    private int columns;
-    private boolean is3D;
 
     public ScreenPanel(JPanel mainPanel) {
         this.mainPanel = mainPanel;
@@ -21,11 +18,11 @@ public class ScreenPanel extends JPanel {
         screenLabel = new JLabel();
         add(screenLabel, BorderLayout.NORTH);
 
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> {
+        gridPanel = new JPanel();
+        add(gridPanel, BorderLayout.CENTER);
 
-            switchPanel("ManageScreens");
-        });
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> switchPanel("ManageScreens"));
         add(backButton, BorderLayout.SOUTH);
     }
 
@@ -53,11 +50,45 @@ public class ScreenPanel extends JPanel {
                 currentScreen = new Screen(id, rows, columns, is3D);
 
                 screenLabel.setText("Screen " + screenId);
+                createGrid(rows, columns);
                 revalidate();
                 repaint();
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void createGrid(int rows, int columns) {
+        gridPanel.removeAll();
+        gridPanel.setLayout(new GridLayout(rows, columns));
+
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Seats WHERE screenId = ?")) {
+            statement.setInt(1, screenId);
+            ResultSet resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                int seatId = resultSet.getInt("id");
+                int displayedId = Integer.parseInt(String.valueOf(seatId).substring(1));
+                boolean isBooked = resultSet.getBoolean("isBooked");
+                boolean isWheelchairAccessible = resultSet.getBoolean("isWheelchairAccessible");
+
+                JButton button = new JButton("Seat " + displayedId);
+                if (isBooked) {
+                    button.setBackground(Color.RED);
+                } else if (isWheelchairAccessible) {
+                    button.setBackground(Color.BLUE);
+                } else {
+                    button.setBackground(Color.GREEN);
+                }
+                gridPanel.add(button);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        revalidate();
+        repaint();
     }
 }
