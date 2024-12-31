@@ -20,6 +20,7 @@ public class Main {
             ManageFilmsPanel manageFilmsPanel = new ManageFilmsPanel(mainPanel);
             ManageBookingsPanel manageBookingsPanel = new ManageBookingsPanel(mainPanel);
             ScreenPanel screenPanel = new ScreenPanel(mainPanel);
+            SeatPanel seatPanel = new SeatPanel(mainPanel);
 
             mainPanel.add(mainMenuPanel, "MainMenu");
             mainPanel.add(manageScreensPanel, "ManageScreens");
@@ -27,6 +28,7 @@ public class Main {
             mainPanel.add(manageFilmsPanel, "ManageFilms");
             mainPanel.add(manageBookingsPanel, "ManageBookings");
             mainPanel.add(screenPanel, "Screen");
+            mainPanel.add(seatPanel, "Seat");
 
             frame.setContentPane(mainPanel);
             frame.setVisible(true);

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.swing.border.EmptyBorder;
 
 public class ScreenPanel extends JPanel {
     private JPanel mainPanel;
@@ -19,16 +20,13 @@ public class ScreenPanel extends JPanel {
         add(screenLabel, BorderLayout.NORTH);
 
         gridPanel = new JPanel();
+        gridPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+
         add(gridPanel, BorderLayout.CENTER);
 
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> switchPanel("ManageScreens"));
         add(backButton, BorderLayout.SOUTH);
-    }
-
-    private void switchPanel(String panelName) {
-        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-        cardLayout.show(mainPanel, panelName);
     }
 
     public void setScreenId(int screenId) {
@@ -82,13 +80,33 @@ public class ScreenPanel extends JPanel {
                 } else {
                     button.setBackground(Color.GREEN);
                 }
+                button.addActionListener(e -> switchPanel("Seat", seatId));
                 gridPanel.add(button);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
+
         revalidate();
         repaint();
+
+    };
+
+    private void switchPanel(String panelName, int id) {
+        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+        cardLayout.show(mainPanel, panelName);
+        Component[] components = mainPanel.getComponents();
+        for (Component component : components) {
+            if (component instanceof SeatPanel) {
+                ((SeatPanel) component).setSeatId(id);
+            }
+        }
     }
+
+    private void switchPanel(String panelName) {
+        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+        cardLayout.show(mainPanel, panelName);
+    }
+
 }
