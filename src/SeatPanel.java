@@ -6,39 +6,78 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import javax.swing.border.EmptyBorder;
 
-public class SeatPanel extends JPanel{
+public class SeatPanel extends JPanel {
     private JPanel mainPanel;
-
     private int seatId;
     private int screenId;
-
     private JLabel seatLabel;
+    private JButton bookButton;
 
-
-    public SeatPanel(JPanel mainPanel){
+    public SeatPanel(JPanel mainPanel) {
         this.mainPanel = mainPanel;
         setLayout(new BorderLayout());
+        setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
         seatLabel = new JLabel();
         add(seatLabel, BorderLayout.NORTH);
+
+        bookButton = new JButton("Book Seat");
+        bookButton.addActionListener(e -> bookSeat());
+        add(bookButton, BorderLayout.CENTER);
 
         JButton backButton = new JButton("Back");
         backButton.addActionListener(e -> switchPanel("ManageScreens"));
         add(backButton, BorderLayout.SOUTH);
     }
 
-    private void switchPanel(String panelName){
+    private void switchPanel(String panelName) {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         cardLayout.show(mainPanel, panelName);
     }
 
-    public void setScreenId(int screenId){
+    public void setScreenId(int screenId) {
         this.screenId = screenId;
     }
 
-    public void setSeatId(int seatId){
+    public void setSeatId(int seatId) {
         this.seatId = seatId;
         seatLabel.setText("Seat " + seatId);
+        fetchSeatInfo();
         revalidate();
         repaint();
+    }
+
+    private void fetchSeatInfo() {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM seats WHERE id = ?")) {
+            preparedStatement.setInt(1, seatId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                boolean isBooked = resultSet.getBoolean("isBooked");
+                if (isBooked) {
+                    seatLabel.setText("Seat " + seatId + " is booked");
+                    bookButton.setVisible(false);
+                } else {
+                    seatLabel.setText("Seat " + seatId + " is available");
+                    bookButton.setVisible(true);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void bookSeat() {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE seats SET isBooked = TRUE WHERE id = ?")) {
+            preparedStatement.setInt(1, seatId);
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                seatLabel.setText("Seat " + seatId + " is booked");
+                bookButton.setVisible(false);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
