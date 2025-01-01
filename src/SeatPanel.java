@@ -12,6 +12,7 @@ public class SeatPanel extends JPanel {
     private int screenId;
     private JLabel seatLabel;
     private JButton bookButton;
+    private JButton unbookButton;
 
     public SeatPanel(JPanel mainPanel) {
         this.mainPanel = mainPanel;
@@ -25,14 +26,29 @@ public class SeatPanel extends JPanel {
         bookButton.addActionListener(e -> bookSeat());
         add(bookButton, BorderLayout.CENTER);
 
+        unbookButton = new JButton("Unbook Seat");
+        unbookButton.addActionListener(e -> unbookSeat());
+        add(unbookButton, BorderLayout.CENTER);
+
         JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> switchPanel("ManageScreens"));
+        backButton.addActionListener(e -> switchPanel("ScreenPanel", screenId));
         add(backButton, BorderLayout.SOUTH);
     }
 
     private void switchPanel(String panelName) {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         cardLayout.show(mainPanel, panelName);
+    }
+
+    private void switchPanel(String panelName, int id) {
+        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+        cardLayout.show(mainPanel, panelName);
+        Component[] components = mainPanel.getComponents();
+        for (Component component : components) {
+            if (component instanceof ScreenPanel) {
+                ((ScreenPanel) component).setScreenId(id);
+            }
+        }
     }
 
     public void setScreenId(int screenId) {
@@ -57,9 +73,11 @@ public class SeatPanel extends JPanel {
                 if (isBooked) {
                     seatLabel.setText("Seat " + seatId + " is booked");
                     bookButton.setVisible(false);
+                    unbookButton.setVisible(true);
                 } else {
                     seatLabel.setText("Seat " + seatId + " is available");
                     bookButton.setVisible(true);
+                    unbookButton.setVisible(false);
                 }
             }
         } catch (SQLException e) {
@@ -75,6 +93,22 @@ public class SeatPanel extends JPanel {
             if (rowsUpdated > 0) {
                 seatLabel.setText("Seat " + seatId + " is booked");
                 bookButton.setVisible(false);
+                unbookButton.setVisible(true);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void unbookSeat() {
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement("UPDATE seats SET isBooked = FALSE WHERE id = ?")) {
+            preparedStatement.setInt(1, seatId);
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated > 0) {
+                seatLabel.setText("Seat " + seatId + " is available");
+                bookButton.setVisible(true);
+                unbookButton.setVisible(false);
             }
         } catch (SQLException e) {
             e.printStackTrace();

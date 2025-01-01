@@ -100,6 +100,7 @@ public class ScreenPanel extends JPanel {
         for (Component component : components) {
             if (component instanceof SeatPanel) {
                 ((SeatPanel) component).setSeatId(id);
+                ((SeatPanel) component).setScreenId(screenId);
             }
         }
     }

@@ -1,6 +1,8 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class DatabaseTest {
 
@@ -8,8 +10,9 @@ public class DatabaseTest {
         try (Connection connection = DatabaseConnection.getConnection()) {
             //(connection, 10, 20, true);
            // insertScreen(connection, 15, 25, false);
-            insertSeats(connection, 1, 8, 12);
-            insertSeats(connection, 2, 5, 8);
+            //insertSeats(connection, 1, 8, 12);
+            //insertSeats(connection, 2, 5, 8);
+            insertDummyFilms(connection);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -42,5 +45,9 @@ public class DatabaseTest {
             }
             statement.executeBatch();
         }
+    }
+
+    private static void insertDummyFilms(Connection connection) throws SQLException {
+        // dgnkldlf
     }
 }
