@@ -48,6 +48,28 @@ public class DatabaseTest {
     }
 
     private static void insertDummyFilms(Connection connection) throws SQLException {
-        // dgnkldlf
+        String sql = "INSERT INTO Films (title, duration, screeningTimes, screenId) VALUES (?, ?, ?, ?)";
+
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, "The Matrix");
+            statement.setInt(2, 120);
+            statement.setString(3, LocalDateTime.now().plusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            statement.setInt(4, 1);
+            statement.addBatch();
+
+            statement.setString(1, "Inception");
+            statement.setInt(2, 150);
+            statement.setString(3, LocalDateTime.now().plusDays(2).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            statement.setInt(4, 1);
+            statement.addBatch();
+
+            statement.setString(1, "Interstellar");
+            statement.setInt(2, 169);
+            statement.setString(3, LocalDateTime.now().plusDays(3).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            statement.setInt(4, 1);
+            statement.addBatch();
+
+            statement.executeBatch();
+        }
     }
 }

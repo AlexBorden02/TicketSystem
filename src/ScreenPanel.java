@@ -9,7 +9,10 @@ import javax.swing.border.EmptyBorder;
 public class ScreenPanel extends JPanel {
     private JPanel mainPanel;
     private JPanel gridPanel;
+
     private int screenId;
+    private int startTime;
+
     private JLabel screenLabel;
     private Screen currentScreen;
 
