@@ -47,13 +47,13 @@ public class ManageFilmsPanel extends JPanel {
         }
     }
 
-    private void switchPanel(String panelName, int screenId) {
+    private void switchPanel(String panelName, int screenId, String startTime) {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         cardLayout.show(mainPanel, panelName);
         Component[] components = mainPanel.getComponents();
         for (Component component : components) {
             if (component instanceof ScreenPanel) {
-                ((ScreenPanel) component).setScreenId(screenId);
+                ((ScreenPanel) component).setScreenInfo(screenId, startTime);
             }
         }
     }
@@ -73,7 +73,9 @@ public class ManageFilmsPanel extends JPanel {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 int screenId = resultSet.getInt("screenID");
-                switchPanel("Screen", screenId);
+                String screeningTimes = resultSet.getString("screeningTimes");
+                switchPanel("Screen", screenId, screeningTimes);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();

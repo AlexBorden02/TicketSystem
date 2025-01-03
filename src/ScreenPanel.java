@@ -11,7 +11,7 @@ public class ScreenPanel extends JPanel {
     private JPanel gridPanel;
 
     private int screenId;
-    private int startTime;
+    private String startTime;
 
     private JLabel screenLabel;
     private Screen currentScreen;
@@ -37,6 +37,12 @@ public class ScreenPanel extends JPanel {
         fetchScreenData(screenId);
     }
 
+    public void setScreenInfo(int screenId, String startTime) {
+        this.screenId = screenId;
+        this.startTime = startTime;
+        fetchScreenData(screenId);
+    }
+
     private void fetchScreenData(int screenId) {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM Screens WHERE id = ?")) {
@@ -50,10 +56,22 @@ public class ScreenPanel extends JPanel {
 
                 currentScreen = new Screen(id, rows, columns, is3D);
 
-                screenLabel.setText("Screen " + screenId);
                 createGrid(rows, columns);
                 revalidate();
                 repaint();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // film info
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Films WHERE screeningTimes = ?")) {
+            statement.setString(1, startTime);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String title = resultSet.getString("title");
+                screenLabel.setText("Screen " + screenId + " - " + title + " - " + startTime);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -64,16 +82,20 @@ public class ScreenPanel extends JPanel {
         gridPanel.removeAll();
         gridPanel.setLayout(new GridLayout(rows, columns));
 
+        String query = "SELECT s.id, s.isWheelchairAccessible, b.seatId AS bookedSeatId " +
+                       "FROM Seats s LEFT JOIN Bookings b ON s.id = b.seatId " +
+                       "WHERE s.screenId = ?";
+
         try (Connection connection = DatabaseConnection.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM Seats WHERE screenId = ?")) {
+             PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, screenId);
             ResultSet resultSet = statement.executeQuery();
 
             while (resultSet.next()) {
                 int seatId = resultSet.getInt("id");
                 int displayedId = Integer.parseInt(String.valueOf(seatId).substring(1));
-                boolean isBooked = resultSet.getBoolean("isBooked");
                 boolean isWheelchairAccessible = resultSet.getBoolean("isWheelchairAccessible");
+                boolean isBooked = resultSet.getInt("bookedSeatId") > 0;
 
                 JButton button = new JButton("Seat " + displayedId);
                 if (isBooked) {
@@ -90,11 +112,9 @@ public class ScreenPanel extends JPanel {
             e.printStackTrace();
         }
 
-
         revalidate();
         repaint();
-
-    };
+    }
 
     private void switchPanel(String panelName, int id) {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
