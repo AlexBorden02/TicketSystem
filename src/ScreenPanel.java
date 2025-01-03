@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Set;
 import javax.swing.border.EmptyBorder;
+import java.util.HashSet;
 
 public class ScreenPanel extends JPanel {
     private JPanel mainPanel;
@@ -15,21 +17,32 @@ public class ScreenPanel extends JPanel {
 
     private JLabel screenLabel;
     private Screen currentScreen;
+    private Set<Integer> selectedSeats;
 
     public ScreenPanel(JPanel mainPanel) {
         this.mainPanel = mainPanel;
+        this.selectedSeats = new HashSet<>();
+
         setLayout(new BorderLayout());
+
+        JPanel topPanel = new JPanel(new BorderLayout());
         screenLabel = new JLabel();
-        add(screenLabel, BorderLayout.NORTH);
+        topPanel.add(screenLabel, BorderLayout.CENTER);
+
+        JButton backButton = new JButton("Back");
+        backButton.addActionListener(e -> switchPanel("ManageFilms"));
+        topPanel.add(backButton, BorderLayout.WEST);
+
+        add(topPanel, BorderLayout.NORTH);
 
         gridPanel = new JPanel();
         gridPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         add(gridPanel, BorderLayout.CENTER);
 
-        JButton backButton = new JButton("Back");
-        backButton.addActionListener(e -> switchPanel("ManageScreens"));
-        add(backButton, BorderLayout.SOUTH);
+        JButton checkoutButton = new JButton("Checkout");
+        checkoutButton.addActionListener(e -> checkoutSeats());
+        add(checkoutButton, BorderLayout.SOUTH);
     }
 
     public void setScreenId(int screenId) {
@@ -100,12 +113,13 @@ public class ScreenPanel extends JPanel {
                 JButton button = new JButton("Seat " + displayedId);
                 if (isBooked) {
                     button.setBackground(Color.RED);
+                    button.setEnabled(false);
                 } else if (isWheelchairAccessible) {
                     button.setBackground(Color.BLUE);
                 } else {
                     button.setBackground(Color.GREEN);
                 }
-                button.addActionListener(e -> switchPanel("Seat", seatId));
+                button.addActionListener(e -> toggleSeatSelection(seatId, button));
                 gridPanel.add(button);
             }
         } catch (SQLException e) {
@@ -116,21 +130,40 @@ public class ScreenPanel extends JPanel {
         repaint();
     }
 
-    private void switchPanel(String panelName, int id) {
+    private void switchPanel(String panelName) {
+        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
+        cardLayout.show(mainPanel, panelName);
+    }
+
+    private void toggleSeatSelection(int seatId, JButton button) {
+        if (selectedSeats.contains(seatId)) {
+            selectedSeats.remove(seatId);
+            button.setBackground(Color.GREEN);
+        } else {
+            selectedSeats.add(seatId);
+            button.setBackground(Color.YELLOW);
+        }
+    }
+
+    private void checkoutSeats(){
+        if (selectedSeats.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please select at least one seat to checkout");
+            return;
+        }
+
+        // switch to checkout panel and pass selected seats
+        switchPanel("Checkout", screenId, startTime, selectedSeats);
+    }
+
+    private void switchPanel(String panelName, int screenId, String startTime, Set<Integer> selectedSeats) {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         cardLayout.show(mainPanel, panelName);
         Component[] components = mainPanel.getComponents();
         for (Component component : components) {
-            if (component instanceof SeatPanel) {
-                ((SeatPanel) component).setSeatId(id);
-                ((SeatPanel) component).setScreenId(screenId);
+            if (component instanceof CheckoutPanel) {
+                ((CheckoutPanel) component).setCheckoutInfo(screenId, startTime, selectedSeats);
             }
         }
-    }
-
-    private void switchPanel(String panelName) {
-        CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
-        cardLayout.show(mainPanel, panelName);
     }
 
 }
