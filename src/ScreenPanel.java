@@ -57,6 +57,7 @@ public class ScreenPanel extends JPanel {
     }
 
     private void fetchScreenData(int screenId) {
+        selectedSeats.clear();
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM Screens WHERE id = ?")) {
             statement.setInt(1, screenId);
