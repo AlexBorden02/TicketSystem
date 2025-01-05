@@ -19,8 +19,6 @@ public class DatabaseSetup {
                 "FOREIGN KEY(screenID) REFERENCES Screens(id)" +
                 ");";
 
-
-        // needs changing bad
         String createFilmsTable = "CREATE TABLE IF NOT EXISTS Films (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "title TEXT NOT NULL," +
@@ -34,14 +32,12 @@ public class DatabaseSetup {
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "filmID INTEGER NOT NULL," +
                 "seatID INTEGER NOT NULL," +
-                "customer TEXT NOT NULL," +
                 "FOREIGN KEY(filmID) REFERENCES Films(id)," +
                 "FOREIGN KEY(seatID) REFERENCES Seats(id)" +
                 ");";
 
-
         try (Connection conn = DatabaseConnection.getConnection();
-         Statement stmt = conn.createStatement()) {
+             Statement stmt = conn.createStatement()) {
             stmt.execute(createScreensTable);
             stmt.execute(createSeatsTable);
             stmt.execute(createFilmsTable);

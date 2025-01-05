@@ -3,6 +3,7 @@ import java.awt.*;
 
 public class Main {
     public static void main(String[] args) {
+        //DatabaseSetup.createTables();
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Movie Theater Ticket System");
 

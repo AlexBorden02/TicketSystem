@@ -4,15 +4,14 @@ public class Film {
     private int id;
     private String title;
     private int duration;
-    private List<String> screeningTimes;
+    private String screeningTime;
     private Screen screen;
 
-    public Film(int id, String title, int duration, List<String> screeningTimes, Screen screen) {
+    public Film(int id, String title, int duration, String screeningTime) {
         this.id = id;
         this.title = title;
         this.duration = duration;
-        this.screeningTimes = screeningTimes;
-        this.screen = screen;
+        this.screeningTime = screeningTime;
     }
 
     public int getId() {
@@ -27,19 +26,11 @@ public class Film {
         return duration;
     }
 
-    public List<String> getScreeningTimes() {
-        return screeningTimes;
-    }
-
     public Screen getScreen() {
         return screen;
     }
 
-    public void addScreeningTime(String time) {
-        screeningTimes.add(time);
-    }
-
-    public void removeScreeningTime(String time) {
-        screeningTimes.remove(time);
+    public String getScreeningTime() {
+        return screeningTime;
     }
 }

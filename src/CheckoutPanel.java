@@ -11,7 +11,7 @@ import java.util.HashSet;
 public class CheckoutPanel extends JPanel {
     private JPanel mainPanel;
     private int screenId;
-    private String startTime;
+    private Film film;
     private Set<Integer> selectedSeats = new HashSet<>();
 
     private JList<String> seatList;
@@ -48,9 +48,9 @@ public class CheckoutPanel extends JPanel {
         cardLayout.show(mainPanel, panelName);
     }
 
-    public void setCheckoutInfo(int screenId, String startTime, Set<Integer> selectedSeats) {
+    public void setCheckoutInfo(int screenId, Film film, Set<Integer> selectedSeats) {
         this.screenId = screenId;
-        this.startTime = startTime;
+        this.film = film;
         this.selectedSeats = selectedSeats;
 
         listModel.clear();
@@ -65,6 +65,20 @@ public class CheckoutPanel extends JPanel {
     private void confirmCheckout(){
         // todododo
         // book the seats!!!
+
+        for (int seat : selectedSeats) {
+            try (Connection connection = DatabaseConnection.getConnection();
+                 PreparedStatement statement = connection.prepareStatement("INSERT INTO Bookings (filmID, seatID) VALUES (?, ?)")) {
+                statement.setInt(1, film.getId());
+                statement.setInt(2, seat);
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        JOptionPane.showMessageDialog(this, "Seats booked successfully!");
+        switchPanel("ManageFilms");
     }
 
 }

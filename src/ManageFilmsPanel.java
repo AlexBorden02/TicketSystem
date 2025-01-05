@@ -47,13 +47,13 @@ public class ManageFilmsPanel extends JPanel {
         }
     }
 
-    private void switchPanel(String panelName, int screenId, String startTime) {
+    private void switchPanel(String panelName, int screenId, Film selectedFilm) {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         cardLayout.show(mainPanel, panelName);
         Component[] components = mainPanel.getComponents();
         for (Component component : components) {
             if (component instanceof ScreenPanel) {
-                ((ScreenPanel) component).setScreenInfo(screenId, startTime);
+                ((ScreenPanel) component).setScreenInfo(screenId, selectedFilm);
             }
         }
     }
@@ -73,8 +73,11 @@ public class ManageFilmsPanel extends JPanel {
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 int screenId = resultSet.getInt("screenID");
+                int filmId = resultSet.getInt("id");
+                int duration = resultSet.getInt("duration");
+                String title = resultSet.getString("title");
                 String screeningTimes = resultSet.getString("screeningTimes");
-                switchPanel("Screen", screenId, screeningTimes);
+                switchPanel("Screen", screenId, new Film(filmId, title, duration, screeningTimes));
 
             }
         } catch (SQLException e) {

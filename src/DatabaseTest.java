@@ -12,7 +12,8 @@ public class DatabaseTest {
            // insertScreen(connection, 15, 25, false);
             //insertSeats(connection, 1, 8, 12);
             //insertSeats(connection, 2, 5, 8);
-            insertDummyFilms(connection);
+            //insertDummyFilms(connection);
+            DatabaseSetup.createTables();
         } catch (SQLException e) {
             e.printStackTrace();
         }

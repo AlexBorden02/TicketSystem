@@ -13,6 +13,7 @@ public class ScreenPanel extends JPanel {
     private JPanel gridPanel;
 
     private int screenId;
+    private Film film;
     private String startTime;
 
     private JLabel screenLabel;
@@ -50,9 +51,9 @@ public class ScreenPanel extends JPanel {
         fetchScreenData(screenId);
     }
 
-    public void setScreenInfo(int screenId, String startTime) {
+    public void setScreenInfo(int screenId, Film film) {
         this.screenId = screenId;
-        this.startTime = startTime;
+        this.film = film;
         fetchScreenData(screenId);
     }
 
@@ -81,11 +82,11 @@ public class ScreenPanel extends JPanel {
         // film info
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement("SELECT * FROM Films WHERE screeningTimes = ?")) {
-            statement.setString(1, startTime);
+            statement.setString(1, film.getScreeningTime());
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 String title = resultSet.getString("title");
-                screenLabel.setText("Screen " + screenId + " - " + title + " - " + startTime);
+                screenLabel.setText("Screen " + screenId + " - " + film.getTitle());
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -96,9 +97,8 @@ public class ScreenPanel extends JPanel {
         gridPanel.removeAll();
         gridPanel.setLayout(new GridLayout(rows, columns));
 
-        String query = "SELECT s.id, s.isWheelchairAccessible, b.seatId AS bookedSeatId " +
-                       "FROM Seats s LEFT JOIN Bookings b ON s.id = b.seatId " +
-                       "WHERE s.screenId = ?";
+        String query = "SELECT id, isWheelchairAccessible FROM Seats WHERE screenId = ?";
+        String bookingQuery = "SELECT seatID FROM Bookings WHERE filmID = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement statement = connection.prepareStatement(query)) {
@@ -107,21 +107,34 @@ public class ScreenPanel extends JPanel {
 
             while (resultSet.next()) {
                 int seatId = resultSet.getInt("id");
-                int displayedId = Integer.parseInt(String.valueOf(seatId).substring(1));
                 boolean isWheelchairAccessible = resultSet.getBoolean("isWheelchairAccessible");
-                boolean isBooked = resultSet.getInt("bookedSeatId") > 0;
 
-                JButton button = new JButton("Seat " + displayedId);
-                if (isBooked) {
-                    button.setBackground(Color.RED);
-                    button.setEnabled(false);
-                } else if (isWheelchairAccessible) {
+                JButton button = new JButton("Seat " + seatId);
+                if (isWheelchairAccessible) {
                     button.setBackground(Color.BLUE);
                 } else {
                     button.setBackground(Color.GREEN);
                 }
                 button.addActionListener(e -> toggleSeatSelection(seatId, button));
                 gridPanel.add(button);
+            }
+
+            PreparedStatement bookingStatement = connection.prepareStatement(bookingQuery);
+            bookingStatement.setInt(1, film.getId());
+
+            ResultSet bookingResultSet = bookingStatement.executeQuery();
+            while (bookingResultSet.next()) {
+                int seatId = bookingResultSet.getInt("seatID");
+                Component[] components = gridPanel.getComponents();
+                for (Component component : components) {
+                    if (component instanceof JButton) {
+                        JButton button = (JButton) component;
+                        if (button.getText().equals("Seat " + seatId)) {
+                            button.setBackground(Color.RED);
+                            button.setEnabled(false);
+                        }
+                    }
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -153,16 +166,16 @@ public class ScreenPanel extends JPanel {
         }
 
         // switch to checkout panel and pass selected seats
-        switchPanel("Checkout", screenId, startTime, selectedSeats);
+        switchPanel("Checkout", screenId, film, selectedSeats);
     }
 
-    private void switchPanel(String panelName, int screenId, String startTime, Set<Integer> selectedSeats) {
+    private void switchPanel(String panelName, int screenId, Film film, Set<Integer> selectedSeats) {
         CardLayout cardLayout = (CardLayout) mainPanel.getLayout();
         cardLayout.show(mainPanel, panelName);
         Component[] components = mainPanel.getComponents();
         for (Component component : components) {
             if (component instanceof CheckoutPanel) {
-                ((CheckoutPanel) component).setCheckoutInfo(screenId, startTime, selectedSeats);
+                ((CheckoutPanel) component).setCheckoutInfo(screenId, film, selectedSeats);
             }
         }
     }
