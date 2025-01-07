@@ -3,6 +3,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseSetup {
+
+    public static void main(String[] args) {
+        createTables();
+    }
+
     public static void createTables() {
         String createScreensTable = "CREATE TABLE IF NOT EXISTS Screens (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -14,8 +19,8 @@ public class DatabaseSetup {
         String createSeatsTable = "CREATE TABLE IF NOT EXISTS Seats (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
                 "screenID INTEGER NOT NULL," +
-                "isBooked BOOLEAN NOT NULL," +
                 "isWheelchairAccessible BOOLEAN NOT NULL," +
+                "isEnabled BOOLEAN NOT NULL DEFAULT 1," +
                 "FOREIGN KEY(screenID) REFERENCES Screens(id)" +
                 ");";
 

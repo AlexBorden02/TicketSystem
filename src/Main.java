@@ -22,6 +22,7 @@ public class Main {
             ManageBookingsPanel manageBookingsPanel = new ManageBookingsPanel(mainPanel);
             ScreenPanel screenPanel = new ScreenPanel(mainPanel);
             CheckoutPanel checkoutPanel = new CheckoutPanel(mainPanel);
+            SeatPanel seatPanel = new SeatPanel(mainPanel);
 
             mainPanel.add(mainMenuPanel, "MainMenu");
             mainPanel.add(manageScreensPanel, "ManageScreens");
@@ -30,6 +31,7 @@ public class Main {
             mainPanel.add(manageBookingsPanel, "ManageBookings");
             mainPanel.add(screenPanel, "Screen");
             mainPanel.add(checkoutPanel, "Checkout");
+            mainPanel.add(seatPanel, "Seat");
 
             frame.setContentPane(mainPanel);
             frame.setVisible(true);

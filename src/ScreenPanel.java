@@ -97,7 +97,7 @@ public class ScreenPanel extends JPanel {
         gridPanel.removeAll();
         gridPanel.setLayout(new GridLayout(rows, columns));
 
-        String query = "SELECT id, isWheelchairAccessible FROM Seats WHERE screenId = ?";
+        String query = "SELECT id, isWheelchairAccessible, isEnabled FROM Seats WHERE screenId = ?";
         String bookingQuery = "SELECT seatID FROM Bookings WHERE filmID = ?";
 
         try (Connection connection = DatabaseConnection.getConnection();
@@ -108,14 +108,18 @@ public class ScreenPanel extends JPanel {
             while (resultSet.next()) {
                 int seatId = resultSet.getInt("id");
                 boolean isWheelchairAccessible = resultSet.getBoolean("isWheelchairAccessible");
+                boolean isEnabled = resultSet.getBoolean("isEnabled");
 
                 JButton button = new JButton("Seat " + seatId);
                 if (isWheelchairAccessible) {
                     button.setBackground(Color.BLUE);
-                } else {
+                    button.addActionListener(e -> toggleSeatSelection(seatId, button));
+                } else if (isEnabled) {
                     button.setBackground(Color.GREEN);
+                    button.addActionListener(e -> toggleSeatSelection(seatId, button));
+                } else {
+                    button.setBackground(Color.GRAY);
                 }
-                button.addActionListener(e -> toggleSeatSelection(seatId, button));
                 gridPanel.add(button);
             }
 
