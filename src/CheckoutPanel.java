@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.Set;
 import javax.swing.border.EmptyBorder;
 import java.util.HashSet;
+import java.io.IOException;
+import java.io.File;
 
 public class CheckoutPanel extends JPanel {
     private JPanel mainPanel;
@@ -77,6 +79,22 @@ public class CheckoutPanel extends JPanel {
             }
         }
 
+        // dump info to text file/receipt
+        try {
+            File file = new File("receipt.txt");
+            file.createNewFile();
+            String receipt = "Film: " + film.getTitle() + "\n";
+            receipt += "Screen: " + screenId + "\n";
+            receipt += "Seats: " + selectedSeats + "\n";
+            receipt += "Total: £" + selectedSeats.size() * 10 + "\n"; // to be replaced with seat price perhaps?
+            receipt += "Thank you for visiting!";
+
+            java.nio.file.Files.write(file.toPath(), receipt.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // switch back to movies
         JOptionPane.showMessageDialog(this, "Seats booked successfully!");
         switchPanel("ManageFilms");
     }

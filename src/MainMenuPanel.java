@@ -9,9 +9,6 @@ public class MainMenuPanel extends JPanel {
         setLayout(new GridLayout(4, 1, 10, 10));
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        JButton manageScreensButton = new JButton("View Screens");
-        manageScreensButton.addActionListener(e -> switchPanel("ManageScreens"));
-
         JButton manageSeatsButton = new JButton("Manage Seats");
         manageSeatsButton.addActionListener(e -> switchPanel("ManageSeats"));
 
@@ -21,7 +18,6 @@ public class MainMenuPanel extends JPanel {
         JButton manageBookingsButton = new JButton("Manage Bookings");
         manageBookingsButton.addActionListener(e -> switchPanel("ManageBookings"));
 
-        add(manageScreensButton);
         add(manageSeatsButton);
         add(manageFilmsButton);
         add(manageBookingsButton);
