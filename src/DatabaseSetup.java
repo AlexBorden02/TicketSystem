@@ -43,10 +43,10 @@ public class DatabaseSetup {
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement()) {
-            stmt.execute(createScreensTable);
-            stmt.execute(createSeatsTable);
-            stmt.execute(createFilmsTable);
-            stmt.execute(createBookingsTable);
+                stmt.execute(createScreensTable);
+                stmt.execute(createSeatsTable);
+                stmt.execute(createFilmsTable);
+                stmt.execute(createBookingsTable);
         } catch (SQLException e) {
             e.printStackTrace();
         }

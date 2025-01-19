@@ -1,0 +1,6 @@
+Booking ID: 52
+Film: The Matrix
+Screen: 2
+Seats: [230, 231, 222, 223]
+Total: £40
+Thank you for visiting!

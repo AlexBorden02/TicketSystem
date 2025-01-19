@@ -110,16 +110,7 @@ public class ScreenPanel extends JPanel {
                 boolean isWheelchairAccessible = resultSet.getBoolean("isWheelchairAccessible");
                 boolean isEnabled = resultSet.getBoolean("isEnabled");
 
-                JButton button = new JButton("Seat " + seatId);
-                if (isWheelchairAccessible) {
-                    button.setBackground(Color.BLUE);
-                    button.addActionListener(e -> toggleSeatSelection(seatId, button));
-                } else if (isEnabled) {
-                    button.setBackground(Color.GREEN);
-                    button.addActionListener(e -> toggleSeatSelection(seatId, button));
-                } else {
-                    button.setBackground(Color.GRAY);
-                }
+                JButton button = getSeatButton(seatId, isWheelchairAccessible, isEnabled);
                 gridPanel.add(button);
             }
 
@@ -146,6 +137,20 @@ public class ScreenPanel extends JPanel {
 
         revalidate();
         repaint();
+    }
+
+    private JButton getSeatButton(int seatId, boolean isWheelchairAccessible, boolean isEnabled) {
+        JButton button = new JButton("Seat " + seatId);
+        if (isWheelchairAccessible) {
+            button.setBackground(Color.BLUE);
+            button.addActionListener(e -> toggleSeatSelection(seatId, button));
+        } else if (isEnabled) {
+            button.setBackground(Color.GREEN);
+            button.addActionListener(e -> toggleSeatSelection(seatId, button));
+        } else {
+            button.setBackground(Color.GRAY);
+        }
+        return button;
     }
 
     private void switchPanel(String panelName) {

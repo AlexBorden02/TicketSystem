@@ -65,33 +65,36 @@ public class CheckoutPanel extends JPanel {
     }
 
     private void confirmCheckout(){
-        // todododo
-        // book the seats!!!
-
         for (int seat : selectedSeats) {
             try (Connection connection = DatabaseConnection.getConnection();
                  PreparedStatement statement = connection.prepareStatement("INSERT INTO Bookings (filmID, seatID) VALUES (?, ?)")) {
                 statement.setInt(1, film.getId());
                 statement.setInt(2, seat);
                 statement.executeUpdate();
+
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int bookingId = generatedKeys.getInt(1);
+                        try {
+                            File file = new File("receipt.txt");
+                            String receipt = "Booking ID: " + bookingId + "\n";
+                            receipt += "Film: " + film.getTitle() + "\n";
+                            receipt += "Screen: " + screenId + "\n";
+                            receipt += "Seats: " + selectedSeats + "\n";
+                            receipt += "Total: £" + selectedSeats.size() * 10 + "\n"; // to be replaced with seat price perhaps?
+                            receipt += "Thank you for visiting!";
+
+                            java.nio.file.Files.write(file.toPath(), receipt.getBytes());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-        }
-
-        // dump info to text file/receipt
-        try {
-            File file = new File("receipt.txt");
-            file.createNewFile();
-            String receipt = "Film: " + film.getTitle() + "\n";
-            receipt += "Screen: " + screenId + "\n";
-            receipt += "Seats: " + selectedSeats + "\n";
-            receipt += "Total: £" + selectedSeats.size() * 10 + "\n"; // to be replaced with seat price perhaps?
-            receipt += "Thank you for visiting!";
-
-            java.nio.file.Files.write(file.toPath(), receipt.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         // switch back to movies

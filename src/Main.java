@@ -1,15 +1,26 @@
 import javax.swing.*;
 import java.awt.*;
+import javax.swing.UIManager.*;
 
 public class Main {
     public static void main(String[] args) {
+        try {
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         //DatabaseSetup.createTables();
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Movie Theater Ticket System");
 
             // screen setup
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(400, 300);
+            frame.setSize(1200, 800);
             frame.setLayout(new CardLayout());
 
 
